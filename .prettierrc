@@ -1,0 +1,22 @@
+{
+  "printWidth": 80,
+  "doubleQuote": true,
+  "singleQuote": false,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "tabWidth": 4,
+  "semi": true,
+  "importOrder": [
+    "^(react)(.*)$",
+    "^(assets)(.*)$",
+    "^(components)(.*)$",
+    "^(pages)(.*)$",
+    "^(store)(.*)$",
+    "^(utils|providers)/(.*)|Api$",
+    "^configs/(.*)$",
+    "^styles/(.*)$",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
+}
