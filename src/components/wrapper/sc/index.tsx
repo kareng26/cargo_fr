@@ -1,8 +1,7 @@
 import styled from "styled-components";
 import React, { forwardRef } from "react";
 
-type ContainerProps = {
-    titlesize: number;
+type ContainerProps = React.HTMLAttributes<HTMLDivElement> & {
     children: React.ReactNode;
 };
 
@@ -12,10 +11,7 @@ const StyledContainer = styled.div<ContainerProps>`
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-size: ${(props) => `${props.titlesize}px`};
-    transition: font-size 0.3s ease-out;
-    margin-bottom: 20px;
-    margin-top: ${() => `calc(50vh - ${window.innerHeight / 2}px)`};
+    transition: margin-top 0.3s ease-out;
 `;
 
 const Container: React.FC<ContainerProps> = forwardRef(
@@ -30,14 +26,7 @@ const Container: React.FC<ContainerProps> = forwardRef(
 
 Container.displayName = "Container";
 
-const Header = styled.header`
-    display: flex;
-    justify-content: center;
-`;
-
-export type TitleProps = {
-    scrolly: number;
-    titlesize: number;
+export type TitleProps = React.HTMLAttributes<HTMLDivElement> & {
     children: React.ReactNode;
 };
 
@@ -51,18 +40,16 @@ const StyledTitle = styled.div<TitleProps>`
         }
     }
 
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     right: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: ${(props) => `${100 - Math.min(props.scrolly / 5, 80)}vh`};
-    font-size: ${(props) => `${props.titlesize}px`};
     transition:
-        font-size 0.3s ease-out,
-        height 0.3s ease-out;
+        font-size 0.5s ease-out,
+        height 0.5s ease-out;
     z-index: 1000;
     background: linear-gradient(
         to right,
@@ -90,4 +77,4 @@ const Title: React.FC<TitleProps> = forwardRef(
 
 Title.displayName = "Title";
 
-export { Header, Title, Container };
+export { Title, Container };

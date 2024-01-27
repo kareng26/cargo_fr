@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
-import { CargoRegistration } from "./registration";
+import { Registration } from "./registration";
+import { Tracking } from "./tracking";
 
 export const router = createBrowserRouter([
     {
@@ -7,7 +8,11 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <CargoRegistration />,
+                element: <Registration />,
+            },
+            {
+                path: "/tracking",
+                element: <Tracking />,
             },
         ],
     },

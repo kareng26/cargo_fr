@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
-import { Container, Title } from "./components";
+import { Container, Title } from "./sc";
 import { StyleSheetManager } from "styled-components";
 import isPropValid from "@emotion/is-prop-valid";
 
@@ -8,52 +8,56 @@ type Props = {
     children: React.ReactNode;
 };
 
+const minFontSize = 60;
+
 export const Wrapper: React.FC<Props> = ({ children }) => {
-    const [scrollY, setScrollY] = useState(0);
-    const [currentWidth, setCurrentWidth] = useState(window.innerWidth);
+    const scrollY = useRef(0);
+    const windowWidth = useRef(window.innerWidth);
 
-    const initialTitleSize = 400;
-    const finalTitleSize = 100;
-
-    const titleSize = Math.max(
-        finalTitleSize +
-            (initialTitleSize - finalTitleSize) * (1 - scrollY / 400),
-        finalTitleSize,
-    );
-
-    const initialTitleMarginTop = `calc(50vh - ${window.innerHeight / 2}px)`;
-
-    const MotionDiv = motion(Container);
-
-    const adjustedTitleSize = titleSize * (currentWidth / 1500);
+    const MotionDiv = useMemo(() => motion(Container), []);
 
     useEffect(() => {
-        const handleResize = () => setCurrentWidth(window.innerWidth);
+        const handleScroll = () => {
+            scrollY.current = window.scrollY;
+            const titleElement = document.getElementById("styled-title");
 
-        const handleScroll = () => setScrollY(window.scrollY);
+            if (titleElement) {
+                const newSize = windowWidth.current / 4 - scrollY.current / 2;
 
-        handleResize();
+                titleElement.style.fontSize = `${Math.max(
+                    minFontSize,
+                    newSize,
+                )}px`;
+            }
+        };
+
+        const handleResize = () => {
+            const titleElement = document.getElementById("styled-title");
+
+            if (titleElement && window.innerWidth !== windowWidth.current) {
+                const newSize = Math.max(minFontSize, window.innerWidth / 4);
+                titleElement.style.fontSize = `${newSize}px`;
+                windowWidth.current = window.innerWidth;
+            }
+        };
+
         handleScroll();
+        handleResize();
 
-        window.addEventListener("resize", handleResize);
         window.addEventListener("scroll", handleScroll);
+        window.addEventListener("resize", handleResize);
 
         return () => {
-            window.removeEventListener("resize", handleResize);
             window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleResize);
         };
     }, []);
 
     return (
         <div>
             <StyleSheetManager shouldForwardProp={(prop) => isPropValid(prop)}>
-                <MotionDiv
-                    initial={{ marginTop: initialTitleMarginTop }}
-                    titlesize={adjustedTitleSize}
-                >
-                    <Title titlesize={adjustedTitleSize} scrolly={scrollY}>
-                        {"CARGO"}
-                    </Title>
+                <MotionDiv>
+                    <Title id={"styled-title"}>{"CARGO"}</Title>
                 </MotionDiv>
             </StyleSheetManager>
             <div>{children}</div>

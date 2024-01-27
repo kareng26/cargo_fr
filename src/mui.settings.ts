@@ -15,14 +15,44 @@ export const theme = createTheme({
     components: {
         MuiTextField: {
             defaultProps: {
+                autoComplete: "off",
                 fullWidth: true,
                 size: "small",
+            },
+            styleOverrides: {
+                root: {
+                    "& .MuiInputLabel-formControl": {
+                        opacity: 0.7,
+                    },
+                },
             },
         },
         MuiButton: {
             defaultProps: {
                 size: "medium",
                 variant: "outlined",
+            },
+        },
+        MuiFormControl: {
+            defaultProps: {
+                fullWidth: true,
+            },
+            styleOverrides: {
+                root: {
+                    "& .MuiInputLabel-formControl": {
+                        opacity: 0.7,
+                    },
+                },
+            },
+        },
+        MuiAutocomplete: {
+            styleOverrides: {
+                root: {
+                    "& .MuiAutocomplete-endAdornment": {
+                        top: -3,
+                        right: "5px!important",
+                    },
+                },
             },
         },
     },

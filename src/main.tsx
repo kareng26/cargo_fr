@@ -12,8 +12,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Global } from "./components/global";
 import { Toaster } from "react-hot-toast";
-import { Wrapper } from "./components/wrapper";
-// import { privateRoute } from "./components/privateRoute";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
