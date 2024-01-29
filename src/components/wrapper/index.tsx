@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
-import { Container, Title } from "./sc";
+import { Container, Title } from "./components";
 import { StyleSheetManager } from "styled-components";
 import isPropValid from "@emotion/is-prop-valid";
 

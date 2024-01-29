@@ -12,11 +12,11 @@ enum Patterns {
     phone = "phone",
 }
 
-enum Masks {
+enum MaskValues {
     phone = "phone",
 }
 
-const validationErrors = Object.freeze<Record<Errors, string>>({
+const ValidationErrors = Object.freeze<Record<Errors, string>>({
     [Errors.required]: "cannot be empty",
     [Errors.incorrectAddress]: "not correct address",
     [Errors.pattern]: "does not match",
@@ -24,14 +24,14 @@ const validationErrors = Object.freeze<Record<Errors, string>>({
     [Errors.maxLength]: "must be less than 30",
 });
 
-const validationPatterns = Object.freeze<Record<Patterns, RegExp>>({
+const ValidationPatterns = Object.freeze<Record<Patterns, RegExp>>({
     [Patterns.string]: /^[A-Za-z]+$/i,
     [Patterns.phone]: /^[\d\s\-()+]+$/i,
     [Patterns.number]: /^[0-9]+$/,
 });
 
-const masks = Object.freeze<Record<Masks, string>>({
-    [Masks.phone]: "+7 (000) 000-00-00",
+const Masks = Object.freeze<Record<MaskValues, string>>({
+    [MaskValues.phone]: "+7 (000) 000-00-00",
 });
 
-export { validationPatterns, validationErrors, masks };
+export { ValidationPatterns, ValidationErrors, Masks };

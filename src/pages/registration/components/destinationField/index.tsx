@@ -1,11 +1,11 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import { TextField } from "@mui/material";
 import { getAddresses } from "../../api.ts";
-import { useAppDispatch } from "../../../../hooks/useAppDispatch.ts";
-import { useOutside } from "../../../../hooks/useOutside.ts";
+import { useAppDispatch } from "@/hooks/useAppDispatch.ts";
+import { useOutside } from "@/hooks/useOutside.ts";
 import { TextFieldProps } from "@mui/material/TextField/TextField";
-import { List } from "../../../../components/list";
-import { useAppSelector } from "../../../../hooks/useAppSelector.ts";
+import { List } from "@/components/list";
+import { useAppSelector } from "@/hooks/useAppSelector.ts";
 
 type Props = TextFieldProps & {
     handleItemListener: (hint: any) => void;

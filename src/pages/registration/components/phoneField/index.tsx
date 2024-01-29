@@ -2,16 +2,16 @@ import { TextField } from "@mui/material";
 import { IMaskMixin } from "react-imask";
 import { Control, useController } from "react-hook-form";
 import React, { ComponentProps } from "react";
-import { FieldValues } from "../../index.tsx";
 import { TextFieldProps } from "@mui/material/TextField/TextField";
-import { masks } from "../../../../consts/validation.ts";
+import { Masks } from "@/consts/validation.ts";
+import { FormValues } from "@/pages/registration/types.ts";
 
 type MaskProps = ComponentProps<typeof MaskedInput>;
 
 type Props = TextFieldProps &
     MaskProps & {
-        control: Control<FieldValues>;
-        name: keyof FieldValues;
+        control: Control<FormValues>;
+        name: keyof FormValues;
     };
 
 const MaskedInput = IMaskMixin(({ inputRef, ...props }) => (
@@ -26,5 +26,5 @@ export const PhoneField: React.FC<Props> = ({ control, name, ...props }) => {
         control,
     });
 
-    return <MaskedInput {...inputProps} {...props} mask={masks.phone} />;
+    return <MaskedInput {...inputProps} {...props} mask={Masks.phone} />;
 };

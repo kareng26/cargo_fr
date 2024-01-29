@@ -1,30 +1,5 @@
-import styled from "styled-components";
 import React, { forwardRef } from "react";
-
-type ContainerProps = React.HTMLAttributes<HTMLDivElement> & {
-    children: React.ReactNode;
-};
-
-const StyledContainer = styled.div<ContainerProps>`
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    transition: margin-top 0.3s ease-out;
-`;
-
-const Container: React.FC<ContainerProps> = forwardRef(
-    (props, ref: React.ForwardedRef<HTMLDivElement>) => {
-        return (
-            <StyledContainer ref={ref} {...props}>
-                {props.children}
-            </StyledContainer>
-        );
-    },
-);
-
-Container.displayName = "Container";
+import styled from "styled-components";
 
 export type TitleProps = React.HTMLAttributes<HTMLDivElement> & {
     children: React.ReactNode;
@@ -77,4 +52,4 @@ const Title: React.FC<TitleProps> = forwardRef(
 
 Title.displayName = "Title";
 
-export { Title, Container };
+export { Title };

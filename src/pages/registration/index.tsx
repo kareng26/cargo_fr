@@ -3,59 +3,27 @@ import { useForm } from "react-hook-form";
 import { TextField, Typography, InputAdornment, Button } from "@mui/material";
 import {
     Container,
-    Content,
     Box,
     Cell,
     Title,
-    GroupTitle,
-    ButtonWrap,
+    BlockTitle,
+    Buttons,
+    DestinationField,
+    SendField,
     Block,
-} from "./sc";
+    PhoneField,
+} from "./components";
 import {
-    validationErrors,
-    validationPatterns,
+    ValidationPatterns,
+    ValidationErrors,
 } from "../../consts/validation.ts";
 import { useAppDispatch } from "../../hooks/useAppDispatch.ts";
 import { Wrapper } from "../../components/wrapper";
-import { DestinationField } from "./components/destinationField";
-import { SendField } from "./components/sendField";
 import { Address, createCargo, createDocument, FiasLevels } from "./api.ts";
-import { PhoneField } from "./components/phoneField";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
-enum StepIndex {
-    MAIN_INFORMATION,
-    RECEIVER_INFORMATION,
-    SPECIFICATIONS,
-    DOCUMENTS,
-    ADDRESSES,
-}
-
-enum FormInputs {
-    name = "name",
-    description = "description",
-    rFullName = "rFullName",
-    rPhoneNumber = "rPhoneNumber",
-    volume = "volume",
-    weight = "weight",
-    sendingDate = "sendingDate",
-    others = "others",
-    waybills = "waybills",
-    delivery = "delivery",
-    sendPoint = "sendPoint",
-    destinationPoint = "destinationPoint",
-}
-
-const steps: Array<Array<keyof typeof FormInputs>> = [
-    [FormInputs.name, FormInputs.description],
-    [FormInputs.rFullName, FormInputs.rPhoneNumber],
-    [FormInputs.volume, FormInputs.weight],
-    [FormInputs.waybills, FormInputs.others],
-    [FormInputs.sendPoint, FormInputs.destinationPoint],
-];
-
-export type FieldValues = Record<FormInputs, string>;
+import { FormInputs, FormValues, StepIndex } from "./types.ts";
+import { Steps } from "./const.ts";
 
 export const Registration: React.FC = () => {
     const navigate = useNavigate();
@@ -73,13 +41,13 @@ export const Registration: React.FC = () => {
         setValue,
         clearErrors,
         trigger,
-    } = useForm<FieldValues>({
+    } = useForm<FormValues>({
         mode: "onSubmit",
         reValidateMode: "onSubmit",
         shouldUseNativeValidation: false,
     });
 
-    const onSubmit = async (data: FieldValues) => {
+    const onSubmit = async (data: FormValues) => {
         const { latitude, longitude } = JSON.parse(data.destinationPoint);
 
         await dispatch(
@@ -118,7 +86,7 @@ export const Registration: React.FC = () => {
     };
 
     const handleNext = async () => {
-        const isValid = await trigger(steps[currentStep]);
+        const isValid = await trigger(Steps[currentStep]);
 
         if (isValid) setCurrentStep((prevStep) => prevStep + 1);
     };
@@ -127,28 +95,28 @@ export const Registration: React.FC = () => {
 
     const sendListener = ({ id }: { id: string }) => {
         if (id) {
-            clearErrors(FormInputs.sendPoint);
-            setValue(FormInputs.sendPoint, id);
+            clearErrors(FormInputs.SEND_POINT);
+            setValue(FormInputs.SEND_POINT, id);
         }
-        getValues(FormInputs.sendPoint);
+        getValues(FormInputs.SEND_POINT);
     };
 
     const destinationListener = ({ data }: { data: Address }) => {
         if (
             ![FiasLevels.APARTMENT, FiasLevels.HOUSE].includes(data.fias_level)
         ) {
-            setError(FormInputs.destinationPoint, {
-                message: validationErrors.incorrectAddress,
+            setError(FormInputs.DESTINATION_POINT, {
+                message: ValidationErrors.incorrectAddress,
             });
         } else {
             setValue(
-                FormInputs.destinationPoint,
+                FormInputs.DESTINATION_POINT,
                 JSON.stringify({
                     latitude: data.geo_lat,
                     longitude: data.geo_lon,
                 }),
             );
-            clearErrors(FormInputs.destinationPoint);
+            clearErrors(FormInputs.DESTINATION_POINT);
         }
     };
 
@@ -156,216 +124,211 @@ export const Registration: React.FC = () => {
         <Wrapper>
             <Container>
                 <Title>{"register your cargo"}</Title>
-                <Content>
-                    <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
-                        <Block
-                            stepindex={StepIndex.MAIN_INFORMATION}
-                            currentstep={currentStep}
-                        >
-                            <GroupTitle>{"main information"}</GroupTitle>
-                            <Cell>
-                                <TextField
-                                    label={"name"}
-                                    {...register(FormInputs.name, {
-                                        required: validationErrors.required,
-                                        pattern: {
-                                            value: validationPatterns.string,
-                                            message: validationErrors.pattern,
-                                        },
-                                        minLength: {
-                                            value: 3,
-                                            message: validationErrors.minLength,
-                                        },
-                                        maxLength: {
-                                            value: 30,
-                                            message: validationErrors.maxLength,
-                                        },
-                                    })}
-                                />
-                                <Typography variant={"caption"} color={"error"}>
-                                    {errors[FormInputs.name]?.message}
-                                </Typography>
-                            </Cell>
-                            <Cell>
-                                <TextField
-                                    label={"description"}
-                                    {...register(FormInputs.description, {
-                                        required: validationErrors.required,
-                                        minLength: {
-                                            value: 3,
-                                            message: validationErrors.minLength,
-                                        },
-                                    })}
-                                />
-                                <Typography variant={"caption"} color={"error"}>
-                                    {errors[FormInputs.description]?.message}
-                                </Typography>
-                            </Cell>
-                        </Block>
-                        <Block
-                            stepindex={StepIndex.RECEIVER_INFORMATION}
-                            currentstep={currentStep}
-                        >
-                            <GroupTitle>{"receiver's information"}</GroupTitle>
-                            <Cell>
-                                <TextField
-                                    label={"receiver's full name"}
-                                    {...register(FormInputs.rFullName, {
-                                        required: validationErrors.required,
-                                        pattern: {
-                                            value: validationPatterns.string,
-                                            message: validationErrors.pattern,
-                                        },
-                                    })}
-                                />
-                                <Typography variant={"caption"} color={"error"}>
-                                    {errors[FormInputs.rFullName]?.message}
-                                </Typography>
-                            </Cell>
-                            <Cell>
-                                <PhoneField
-                                    label={"phone number"}
-                                    control={control}
-                                    name={FormInputs.rPhoneNumber}
-                                />
-                                <Typography variant={"caption"} color={"error"}>
-                                    {errors[FormInputs.rPhoneNumber]?.message}
-                                </Typography>
-                            </Cell>
-                        </Block>
-                        <Block
-                            stepindex={StepIndex.SPECIFICATIONS}
-                            currentstep={currentStep}
-                        >
-                            <GroupTitle>{"specifications"}</GroupTitle>
-                            <Cell>
-                                <TextField
-                                    type={"number"}
-                                    label={"volume"}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position={"start"}>
-                                                {"m3"}
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    {...register(FormInputs.volume, {
-                                        required: validationErrors.required,
-                                        pattern: {
-                                            value: validationPatterns.number,
-                                            message: validationErrors.pattern,
-                                        },
-                                    })}
-                                />
-                                <Typography variant={"caption"} color={"error"}>
-                                    {errors[FormInputs.volume]?.message}
-                                </Typography>
-                            </Cell>
-                            <Cell>
-                                <TextField
-                                    type={"number"}
-                                    label={"weight"}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position={"start"}>
-                                                {"kg"}
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    {...register(FormInputs.weight, {
-                                        required: validationErrors.required,
-                                        pattern: {
-                                            value: validationPatterns.number,
-                                            message: validationErrors.pattern,
-                                        },
-                                    })}
-                                />
-                                <Typography variant={"caption"} color={"error"}>
-                                    {errors[FormInputs.weight]?.message}
-                                </Typography>
-                            </Cell>
-                        </Block>
-                        <Block
-                            stepindex={StepIndex.DOCUMENTS}
-                            currentstep={currentStep}
-                        >
-                            <GroupTitle>{"documents"}</GroupTitle>
-                            <Cell>
-                                <TextField
-                                    type={"file"}
-                                    label={"waybills"}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    {...register(FormInputs.waybills)}
-                                />
-                                <Typography variant={"caption"} color={"error"}>
-                                    {errors[FormInputs.waybills]?.message}
-                                </Typography>
-                            </Cell>
-                            <Cell>
-                                <TextField
-                                    type={"file"}
-                                    label={"others"}
-                                    inputProps={{ multiple: true }}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    {...register(FormInputs.others)}
-                                />
-                                <Typography variant={"caption"} color={"error"}>
-                                    {errors[FormInputs.others]?.message}
-                                </Typography>
-                            </Cell>
-                        </Block>
-                        <Block
-                            stepindex={StepIndex.ADDRESSES}
-                            currentstep={currentStep}
-                        >
-                            <GroupTitle>{"addresses"}</GroupTitle>
-                            <Cell>
-                                <SendField
-                                    handleItemListener={sendListener}
-                                    {...register(FormInputs.sendPoint, {
-                                        required: validationErrors.required,
-                                    })}
-                                />
-                                <Typography variant={"caption"} color={"error"}>
-                                    {errors[FormInputs.sendPoint]?.message}
-                                </Typography>
-                            </Cell>
-                            <Cell>
-                                <DestinationField
-                                    handleItemListener={destinationListener}
-                                    {...register(FormInputs.destinationPoint, {
-                                        required: validationErrors.required,
-                                    })}
-                                />
-                                <Typography variant={"caption"} color={"error"}>
-                                    {
-                                        errors[FormInputs.destinationPoint]
-                                            ?.message
-                                    }
-                                </Typography>
-                            </Cell>
-                        </Block>
-                        <ButtonWrap>
-                            {currentStep > 0 && (
-                                <Button type={"button"} onClick={handlePrev}>
-                                    {"Previous"}
-                                </Button>
-                            )}
-                            {currentStep < steps.length - 1 && (
-                                <Button type={"button"} onClick={handleNext}>
-                                    {"Next"}
-                                </Button>
-                            )}
-                            {currentStep === steps.length - 1 && (
-                                <Button type={"submit"}>{"Create"}</Button>
-                            )}
-                        </ButtonWrap>
-                    </Box>
-                </Content>
+                <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
+                    <Block
+                        stepindex={StepIndex.MAIN_INFORMATION}
+                        currentstep={currentStep}
+                    >
+                        <BlockTitle>{"main information"}</BlockTitle>
+                        <Cell>
+                            <TextField
+                                label={"name"}
+                                {...register(FormInputs.NAME, {
+                                    required: ValidationErrors.required,
+                                    pattern: {
+                                        value: ValidationPatterns.string,
+                                        message: ValidationErrors.pattern,
+                                    },
+                                    minLength: {
+                                        value: 3,
+                                        message: ValidationErrors.minLength,
+                                    },
+                                    maxLength: {
+                                        value: 30,
+                                        message: ValidationErrors.maxLength,
+                                    },
+                                })}
+                            />
+                            <Typography variant={"caption"} color={"error"}>
+                                {errors[FormInputs.NAME]?.message}
+                            </Typography>
+                        </Cell>
+                        <Cell>
+                            <TextField
+                                label={"description"}
+                                {...register(FormInputs.DESCRIPTION, {
+                                    required: ValidationErrors.required,
+                                    minLength: {
+                                        value: 3,
+                                        message: ValidationErrors.minLength,
+                                    },
+                                })}
+                            />
+                            <Typography variant={"caption"} color={"error"}>
+                                {errors[FormInputs.DESCRIPTION]?.message}
+                            </Typography>
+                        </Cell>
+                    </Block>
+                    <Block
+                        stepindex={StepIndex.RECEIVER_INFORMATION}
+                        currentstep={currentStep}
+                    >
+                        <BlockTitle>{"receiver's information"}</BlockTitle>
+                        <Cell>
+                            <TextField
+                                label={"receiver's full name"}
+                                {...register(FormInputs.R_FULL_NAME, {
+                                    required: ValidationErrors.required,
+                                    pattern: {
+                                        value: ValidationPatterns.string,
+                                        message: ValidationErrors.pattern,
+                                    },
+                                })}
+                            />
+                            <Typography variant={"caption"} color={"error"}>
+                                {errors[FormInputs.R_FULL_NAME]?.message}
+                            </Typography>
+                        </Cell>
+                        <Cell>
+                            <PhoneField
+                                label={"phone number"}
+                                control={control}
+                                name={FormInputs.R_PHONE_NUMBER}
+                            />
+                            <Typography variant={"caption"} color={"error"}>
+                                {errors[FormInputs.R_PHONE_NUMBER]?.message}
+                            </Typography>
+                        </Cell>
+                    </Block>
+                    <Block
+                        stepindex={StepIndex.SPECIFICATIONS}
+                        currentstep={currentStep}
+                    >
+                        <BlockTitle>{"specifications"}</BlockTitle>
+                        <Cell>
+                            <TextField
+                                type={"number"}
+                                label={"volume"}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position={"start"}>
+                                            {"m3"}
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                {...register(FormInputs.VOLUME, {
+                                    required: ValidationErrors.required,
+                                    pattern: {
+                                        value: ValidationPatterns.number,
+                                        message: ValidationErrors.pattern,
+                                    },
+                                })}
+                            />
+                            <Typography variant={"caption"} color={"error"}>
+                                {errors[FormInputs.VOLUME]?.message}
+                            </Typography>
+                        </Cell>
+                        <Cell>
+                            <TextField
+                                type={"number"}
+                                label={"weight"}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position={"start"}>
+                                            {"kg"}
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                {...register(FormInputs.WEIGHT, {
+                                    required: ValidationErrors.required,
+                                    pattern: {
+                                        value: ValidationPatterns.number,
+                                        message: ValidationErrors.pattern,
+                                    },
+                                })}
+                            />
+                            <Typography variant={"caption"} color={"error"}>
+                                {errors[FormInputs.WEIGHT]?.message}
+                            </Typography>
+                        </Cell>
+                    </Block>
+                    <Block
+                        stepindex={StepIndex.DOCUMENTS}
+                        currentstep={currentStep}
+                    >
+                        <BlockTitle>{"documents"}</BlockTitle>
+                        <Cell>
+                            <TextField
+                                type={"file"}
+                                label={"waybills"}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                {...register(FormInputs.WAYBILLS)}
+                            />
+                            <Typography variant={"caption"} color={"error"}>
+                                {errors[FormInputs.WAYBILLS]?.message}
+                            </Typography>
+                        </Cell>
+                        <Cell>
+                            <TextField
+                                type={"file"}
+                                label={"others"}
+                                inputProps={{ multiple: true }}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                {...register(FormInputs.OTHERS)}
+                            />
+                            <Typography variant={"caption"} color={"error"}>
+                                {errors[FormInputs.OTHERS]?.message}
+                            </Typography>
+                        </Cell>
+                    </Block>
+                    <Block
+                        stepindex={StepIndex.ADDRESSES}
+                        currentstep={currentStep}
+                    >
+                        <BlockTitle>{"addresses"}</BlockTitle>
+                        <Cell>
+                            <SendField
+                                handleItemListener={sendListener}
+                                {...register(FormInputs.SEND_POINT, {
+                                    required: ValidationErrors.required,
+                                })}
+                            />
+                            <Typography variant={"caption"} color={"error"}>
+                                {errors[FormInputs.SEND_POINT]?.message}
+                            </Typography>
+                        </Cell>
+                        <Cell>
+                            <DestinationField
+                                handleItemListener={destinationListener}
+                                {...register(FormInputs.DESTINATION_POINT, {
+                                    required: ValidationErrors.required,
+                                })}
+                            />
+                            <Typography variant={"caption"} color={"error"}>
+                                {errors[FormInputs.DESTINATION_POINT]?.message}
+                            </Typography>
+                        </Cell>
+                    </Block>
+                    <Buttons>
+                        {currentStep > 0 && (
+                            <Button type={"button"} onClick={handlePrev}>
+                                {"Previous"}
+                            </Button>
+                        )}
+                        {currentStep < Steps.length - 1 && (
+                            <Button type={"button"} onClick={handleNext}>
+                                {"Next"}
+                            </Button>
+                        )}
+                        {currentStep === Steps.length - 1 && (
+                            <Button type={"submit"}>{"Create"}</Button>
+                        )}
+                    </Buttons>
+                </Box>
             </Container>
         </Wrapper>
     );

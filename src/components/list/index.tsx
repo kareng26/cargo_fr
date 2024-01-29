@@ -1,5 +1,5 @@
 import React from "react";
-import { Item, ListWrap } from "./sc";
+import { Item, List as Wrap } from "./components";
 import DOMPurify from "dompurify";
 
 type Props = {
@@ -18,7 +18,7 @@ export const List: React.FC<Props> = ({
     keyValue = "id",
 }) => {
     return (
-        <ListWrap>
+        <Wrap>
             {data?.map((hint) => (
                 <Item
                     key={hint?.[keyValue]}
@@ -36,6 +36,6 @@ export const List: React.FC<Props> = ({
                     />
                 </Item>
             ))}
-        </ListWrap>
+        </Wrap>
     );
 };
