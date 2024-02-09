@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
-import { Container, Title } from "./components";
+import { Container } from "./components";
 import { StyleSheetManager } from "styled-components";
 import isPropValid from "@emotion/is-prop-valid";
+import { Title } from "@/components/title";
 
 type Props = {
     children: React.ReactNode;

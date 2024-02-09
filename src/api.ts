@@ -5,6 +5,6 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    config.headers["Authorization"] = 1;
+    config.headers["Authorization"] = 7;
     return config;
 });

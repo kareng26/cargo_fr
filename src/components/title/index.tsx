@@ -22,6 +22,7 @@ const StyledTitle = styled.div<TitleProps>`
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: "Playfair Display", serif;
     transition:
         font-size 0.5s ease-out,
         height 0.5s ease-out;

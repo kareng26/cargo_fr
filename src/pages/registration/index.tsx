@@ -1,40 +1,41 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { TextField, Typography, InputAdornment, Button } from "@mui/material";
-import {
-    Container,
-    Box,
-    Cell,
-    Title,
-    BlockTitle,
-    Buttons,
-    DestinationField,
-    SendField,
-    Block,
-    PhoneField,
-} from "./components";
-import {
-    ValidationPatterns,
-    ValidationErrors,
-} from "../../consts/validation.ts";
-import { useAppDispatch } from "../../hooks/useAppDispatch.ts";
-import { Wrapper } from "../../components/wrapper";
-import { Address, createCargo, createDocument, FiasLevels } from "./api.ts";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
+import { Container, Box, Title, Buttons } from "./components";
+import { Wrapper } from "@/components/wrapper";
 import { FormInputs, FormValues, StepIndex } from "./types.ts";
 import { Steps } from "./const.ts";
+import { ValidationErrors } from "@/consts/validation.ts";
+import {
+    MainInformation,
+    ReceiverInformation,
+    Addresses,
+    Documents,
+    Specifications,
+} from "@/pages/registration/components/form";
+import { useTranslation } from "react-i18next";
+import { I18 } from "@/i18n.ts";
+import { Address, FiasLevels } from "@/types.ts";
+import { useCreateCargoMutation } from "@/store/api/cargo.ts";
+import { useCreateDocumentMutation } from "@/store/api";
 
 export const Registration: React.FC = () => {
+    const [createCargo, { data: cargo, isError: isCargoError }] =
+        useCreateCargoMutation();
+    const [createDocument, { isError: isDocumentError }] =
+        useCreateDocumentMutation();
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
+    const { t } = useTranslation();
 
-    const [currentStep, setCurrentStep] = useState<number>(0);
+    const [currentStep, setCurrentStep] = useState<number>(
+        StepIndex.MAIN_INFORMATION,
+    );
 
     const {
         register,
         formState: { errors },
-        getValues,
         handleSubmit,
         control,
         setError,
@@ -47,42 +48,45 @@ export const Registration: React.FC = () => {
         shouldUseNativeValidation: false,
     });
 
-    const onSubmit = async (data: FormValues) => {
-        const { latitude, longitude } = JSON.parse(data.destinationPoint);
+    const handleCreateDocument = async (id: string, data: FormValues) => {
+        await createDocument({
+            id,
+            waybills: data.waybills,
+            others: data.others,
+        });
 
-        await dispatch(
-            createCargo({
-                name: data.name,
-                description: data.description,
-                receiver_name: data.rFullName,
-                receiver_contact: data.rPhoneNumber,
-                weight: Number(data.weight),
-                volume: Number(data.volume),
-                latitude,
-                longitude,
-                send_point: Number(data.sendPoint),
-            }),
-        )
-            .unwrap()
-            .then((res) => {
-                if (res?.id) {
-                    dispatch(
-                        createDocument({
-                            id: res.id,
-                            waybills: data.waybills,
-                            others: data.others,
-                        }),
-                    )
-                        .unwrap()
-                        .then((result) => {
-                            if (result?.code === 201) {
-                                navigate("/tracking");
-                            } else {
-                                toast.error("error occurred");
-                            }
-                        });
-                }
-            });
+        if (!isDocumentError) {
+            navigate("/tracking");
+            toast.success(t(I18.SUCCESSED));
+        } else {
+            toast.error(t(I18.ERROR_OCCURRED));
+        }
+    };
+
+    const onSubmit = async (data: FormValues) => {
+        await createCargo({
+            name: data.name,
+            description: data.description,
+            receiver_name: data.rFullName,
+            receiver_contact: data.rPhoneNumber,
+            weight: Number(data.weight),
+            volume: Number(data.volume),
+            send_address: JSON.parse(data.sendPoint),
+            receiver_address: JSON.parse(data.destinationPoint),
+        });
+
+        if (isCargoError) {
+            toast.error(t(I18.ERROR_OCCURRED));
+            return;
+        }
+
+        if (!data.waybills.length && !data.others.length) {
+            navigate("/tracking");
+            toast.success(t(I18.SUCCESSED));
+            return;
+        }
+
+        await handleCreateDocument(cargo!.id, data);
     };
 
     const handleNext = async () => {
@@ -93,239 +97,90 @@ export const Registration: React.FC = () => {
 
     const handlePrev = () => setCurrentStep((prevStep) => prevStep - 1);
 
-    const sendListener = ({ id }: { id: string }) => {
-        if (id) {
-            clearErrors(FormInputs.SEND_POINT);
-            setValue(FormInputs.SEND_POINT, id);
+    const handleKeyPress = (event: React.KeyboardEvent) => {
+        if (event.key === "Enter") {
+            handleNext();
         }
-        getValues(FormInputs.SEND_POINT);
     };
 
-    const destinationListener = ({ data }: { data: Address }) => {
+    const addressListener = (
+        data: Address,
+        value: string,
+        field: keyof typeof FormInputs,
+    ) => {
         if (
             ![FiasLevels.APARTMENT, FiasLevels.HOUSE].includes(data.fias_level)
         ) {
-            setError(FormInputs.DESTINATION_POINT, {
+            setError(FormInputs[field], {
                 message: ValidationErrors.incorrectAddress,
             });
         } else {
             setValue(
-                FormInputs.DESTINATION_POINT,
+                FormInputs[field],
                 JSON.stringify({
+                    name: value,
                     latitude: data.geo_lat,
                     longitude: data.geo_lon,
                 }),
             );
-            clearErrors(FormInputs.DESTINATION_POINT);
+            clearErrors(FormInputs[field]);
         }
     };
 
     return (
         <Wrapper>
             <Container>
-                <Title>{"register your cargo"}</Title>
-                <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
-                    <Block
-                        stepindex={StepIndex.MAIN_INFORMATION}
-                        currentstep={currentStep}
-                    >
-                        <BlockTitle>{"main information"}</BlockTitle>
-                        <Cell>
-                            <TextField
-                                label={"name"}
-                                {...register(FormInputs.NAME, {
-                                    required: ValidationErrors.required,
-                                    pattern: {
-                                        value: ValidationPatterns.string,
-                                        message: ValidationErrors.pattern,
-                                    },
-                                    minLength: {
-                                        value: 3,
-                                        message: ValidationErrors.minLength,
-                                    },
-                                    maxLength: {
-                                        value: 30,
-                                        message: ValidationErrors.maxLength,
-                                    },
-                                })}
-                            />
-                            <Typography variant={"caption"} color={"error"}>
-                                {errors[FormInputs.NAME]?.message}
-                            </Typography>
-                        </Cell>
-                        <Cell>
-                            <TextField
-                                label={"description"}
-                                {...register(FormInputs.DESCRIPTION, {
-                                    required: ValidationErrors.required,
-                                    minLength: {
-                                        value: 3,
-                                        message: ValidationErrors.minLength,
-                                    },
-                                })}
-                            />
-                            <Typography variant={"caption"} color={"error"}>
-                                {errors[FormInputs.DESCRIPTION]?.message}
-                            </Typography>
-                        </Cell>
-                    </Block>
-                    <Block
-                        stepindex={StepIndex.RECEIVER_INFORMATION}
-                        currentstep={currentStep}
-                    >
-                        <BlockTitle>{"receiver's information"}</BlockTitle>
-                        <Cell>
-                            <TextField
-                                label={"receiver's full name"}
-                                {...register(FormInputs.R_FULL_NAME, {
-                                    required: ValidationErrors.required,
-                                    pattern: {
-                                        value: ValidationPatterns.string,
-                                        message: ValidationErrors.pattern,
-                                    },
-                                })}
-                            />
-                            <Typography variant={"caption"} color={"error"}>
-                                {errors[FormInputs.R_FULL_NAME]?.message}
-                            </Typography>
-                        </Cell>
-                        <Cell>
-                            <PhoneField
-                                label={"phone number"}
-                                control={control}
-                                name={FormInputs.R_PHONE_NUMBER}
-                            />
-                            <Typography variant={"caption"} color={"error"}>
-                                {errors[FormInputs.R_PHONE_NUMBER]?.message}
-                            </Typography>
-                        </Cell>
-                    </Block>
-                    <Block
-                        stepindex={StepIndex.SPECIFICATIONS}
-                        currentstep={currentStep}
-                    >
-                        <BlockTitle>{"specifications"}</BlockTitle>
-                        <Cell>
-                            <TextField
-                                type={"number"}
-                                label={"volume"}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position={"start"}>
-                                            {"m3"}
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                {...register(FormInputs.VOLUME, {
-                                    required: ValidationErrors.required,
-                                    pattern: {
-                                        value: ValidationPatterns.number,
-                                        message: ValidationErrors.pattern,
-                                    },
-                                })}
-                            />
-                            <Typography variant={"caption"} color={"error"}>
-                                {errors[FormInputs.VOLUME]?.message}
-                            </Typography>
-                        </Cell>
-                        <Cell>
-                            <TextField
-                                type={"number"}
-                                label={"weight"}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position={"start"}>
-                                            {"kg"}
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                {...register(FormInputs.WEIGHT, {
-                                    required: ValidationErrors.required,
-                                    pattern: {
-                                        value: ValidationPatterns.number,
-                                        message: ValidationErrors.pattern,
-                                    },
-                                })}
-                            />
-                            <Typography variant={"caption"} color={"error"}>
-                                {errors[FormInputs.WEIGHT]?.message}
-                            </Typography>
-                        </Cell>
-                    </Block>
-                    <Block
-                        stepindex={StepIndex.DOCUMENTS}
-                        currentstep={currentStep}
-                    >
-                        <BlockTitle>{"documents"}</BlockTitle>
-                        <Cell>
-                            <TextField
-                                type={"file"}
-                                label={"waybills"}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                {...register(FormInputs.WAYBILLS)}
-                            />
-                            <Typography variant={"caption"} color={"error"}>
-                                {errors[FormInputs.WAYBILLS]?.message}
-                            </Typography>
-                        </Cell>
-                        <Cell>
-                            <TextField
-                                type={"file"}
-                                label={"others"}
-                                inputProps={{ multiple: true }}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                {...register(FormInputs.OTHERS)}
-                            />
-                            <Typography variant={"caption"} color={"error"}>
-                                {errors[FormInputs.OTHERS]?.message}
-                            </Typography>
-                        </Cell>
-                    </Block>
-                    <Block
-                        stepindex={StepIndex.ADDRESSES}
-                        currentstep={currentStep}
-                    >
-                        <BlockTitle>{"addresses"}</BlockTitle>
-                        <Cell>
-                            <SendField
-                                handleItemListener={sendListener}
-                                {...register(FormInputs.SEND_POINT, {
-                                    required: ValidationErrors.required,
-                                })}
-                            />
-                            <Typography variant={"caption"} color={"error"}>
-                                {errors[FormInputs.SEND_POINT]?.message}
-                            </Typography>
-                        </Cell>
-                        <Cell>
-                            <DestinationField
-                                handleItemListener={destinationListener}
-                                {...register(FormInputs.DESTINATION_POINT, {
-                                    required: ValidationErrors.required,
-                                })}
-                            />
-                            <Typography variant={"caption"} color={"error"}>
-                                {errors[FormInputs.DESTINATION_POINT]?.message}
-                            </Typography>
-                        </Cell>
-                    </Block>
+                <Title>{t(I18.REGISTER_CARGO)}</Title>
+                <Box
+                    component={"form"}
+                    onSubmit={handleSubmit(onSubmit)}
+                    onKeyUp={handleKeyPress}
+                >
+                    <MainInformation
+                        register={register}
+                        currentStep={currentStep}
+                        errors={errors}
+                    />
+                    <ReceiverInformation
+                        register={register}
+                        currentStep={currentStep}
+                        errors={errors}
+                        control={control}
+                    />
+                    <Specifications
+                        register={register}
+                        currentStep={currentStep}
+                        errors={errors}
+                    />
+                    <Documents
+                        register={register}
+                        currentStep={currentStep}
+                        errors={errors}
+                    />
+                    <Addresses
+                        register={register}
+                        currentStep={currentStep}
+                        errors={errors}
+                        sendListener={(...rst) =>
+                            addressListener(...rst, "SEND_POINT")
+                        }
+                        destinationListener={(...rst) =>
+                            addressListener(...rst, "DESTINATION_POINT")
+                        }
+                    />
                     <Buttons>
                         {currentStep > 0 && (
                             <Button type={"button"} onClick={handlePrev}>
-                                {"Previous"}
+                                {t(I18.PREVIOUS)}
                             </Button>
                         )}
                         {currentStep < Steps.length - 1 && (
                             <Button type={"button"} onClick={handleNext}>
-                                {"Next"}
+                                {t(I18.NEXT)}
                             </Button>
                         )}
                         {currentStep === Steps.length - 1 && (
-                            <Button type={"submit"}>{"Create"}</Button>
+                            <Button type={"submit"}>{t(I18.CREATE)}</Button>
                         )}
                     </Buttons>
                 </Box>

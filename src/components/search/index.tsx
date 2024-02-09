@@ -1,31 +1,32 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import { TextField } from "@mui/material";
-import { getAddresses } from "../../api.ts";
-import { useAppDispatch } from "@/hooks/useAppDispatch.ts";
 import { useOutside } from "@/hooks/useOutside.ts";
 import { TextFieldProps } from "@mui/material/TextField/TextField";
 import { List } from "@/components/list";
-import { useAppSelector } from "@/hooks/useAppSelector.ts";
+import { useGetAddressesQuery } from "@/store/api/address.ts";
+import { Address } from "@/types.ts";
 
 type Props = TextFieldProps & {
-    handleItemListener: (hint: any) => void;
+    handleItemListener: (data: Address, value: string) => void;
 };
 
-export const DestinationField: React.FC<Props> = forwardRef((props, _ref) => {
-    const { addresses } = useAppSelector((state) => state.addresses);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const Search: React.FC<Props> = forwardRef((props, _ref) => {
     const [searchValue, setSearchValue] = useState<string>("");
+
+    const { data } = useGetAddressesQuery(searchValue);
     const { isShow, setIsShow, ref } = useOutside({
         initialIsVisible: false,
     });
 
+    const addresses = data?.suggestions;
+
     const { handleItemListener, ...rst } = props;
 
-    const dispatch = useAppDispatch();
-
-    const handleClick = (value: string, hint: any) => {
+    const handleClick = (value: string, { data }: { data: Address }) => {
         setSearchValue(value);
         setIsShow(false);
-        handleItemListener(hint);
+        handleItemListener(data, value);
     };
 
     const onSearch = (input: string) => {
@@ -35,7 +36,7 @@ export const DestinationField: React.FC<Props> = forwardRef((props, _ref) => {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            dispatch(getAddresses(searchValue ?? ""));
+            setSearchValue(searchValue);
         }, 200);
 
         return () => clearTimeout(timer);
@@ -44,7 +45,6 @@ export const DestinationField: React.FC<Props> = forwardRef((props, _ref) => {
     return (
         <div ref={ref}>
             <TextField
-                label={"destination point"}
                 {...rst}
                 value={searchValue}
                 onChange={(event) => onSearch(event.target.value)}
@@ -62,4 +62,4 @@ export const DestinationField: React.FC<Props> = forwardRef((props, _ref) => {
     );
 });
 
-DestinationField.displayName = "Search";
+Search.displayName = "Search";

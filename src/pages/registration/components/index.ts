@@ -4,6 +4,5 @@ export * from "./cell";
 export * from "./buttons";
 export * from "./title";
 export * from "./container";
-export * from "./destinationField";
+export * from "./error";
 export * from "./phoneField";
-export * from "./sendField";

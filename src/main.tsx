@@ -12,6 +12,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Global } from "./components/global";
 import { Toaster } from "react-hot-toast";
+import "./i18n";
+import { Container } from "@/components/container";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
@@ -19,8 +21,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Global />
                 <Provider store={store}>
-                    <RouterProvider router={router} />
-                    <Toaster />
+                    <Container>
+                        <RouterProvider router={router} />
+                    </Container>
+                    <Toaster position={"top-right"} />
                 </Provider>
             </LocalizationProvider>
         </ThemeProvider>

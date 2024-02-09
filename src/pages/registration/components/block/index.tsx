@@ -11,6 +11,7 @@ type BlockProps = {
 const StyledBlock = styled.div<BlockProps>`
     display: ${(props) =>
         props.currentstep === props.stepindex ? "block" : "none"};
+    width: 100%;
 `;
 
 const Block: React.FC<BlockProps> = forwardRef(

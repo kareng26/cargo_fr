@@ -1,15 +1,19 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import cargo from "./slices/cargo.ts";
-import points from "./slices/points.ts";
-import addresses from "./slices/addresses.ts";
+import { configureStore } from "@reduxjs/toolkit";
+import { cargoApi, documentApi, addressApi } from "@/store/api";
 
 const store = () =>
     configureStore({
-        reducer: combineReducers({
-            cargo,
-            points,
-            addresses,
-        }),
+        reducer: {
+            [cargoApi.reducerPath]: cargoApi.reducer,
+            [documentApi.reducerPath]: documentApi.reducer,
+            [addressApi.reducerPath]: addressApi.reducer,
+        },
+        middleware: (getDefaultMiddleware) =>
+            getDefaultMiddleware().concat(
+                cargoApi.middleware,
+                documentApi.middleware,
+                addressApi.middleware,
+            ),
     });
 
 export type AppStore = ReturnType<typeof store>;

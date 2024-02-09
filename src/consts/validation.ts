@@ -17,16 +17,16 @@ enum MaskValues {
 }
 
 const ValidationErrors = Object.freeze<Record<Errors, string>>({
-    [Errors.required]: "cannot be empty",
-    [Errors.incorrectAddress]: "not correct address",
-    [Errors.pattern]: "does not match",
-    [Errors.minLength]: "must be more than 2",
-    [Errors.maxLength]: "must be less than 30",
+    [Errors.required]: "empty",
+    [Errors.incorrectAddress]: "incorrect_address",
+    [Errors.pattern]: "doesnt_match",
+    [Errors.minLength]: "more_than_2",
+    [Errors.maxLength]: "less_than_30",
 });
 
 const ValidationPatterns = Object.freeze<Record<Patterns, RegExp>>({
-    [Patterns.string]: /^[A-Za-z]+$/i,
-    [Patterns.phone]: /^[\d\s\-()+]+$/i,
+    [Patterns.string]: /^[a-zA-Zа-яА-Я0-9\s.,!?]+$/,
+    [Patterns.phone]: /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/,
     [Patterns.number]: /^[0-9]+$/,
 });
 

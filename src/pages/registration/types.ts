@@ -19,7 +19,18 @@ enum FormInputs {
     DESTINATION_POINT = "destinationPoint",
 }
 
-type FormValues = Record<FormInputs, string>;
+type FormValues = {
+    [FormInputs.NAME]: string;
+    [FormInputs.DESCRIPTION]: string;
+    [FormInputs.R_FULL_NAME]: string;
+    [FormInputs.R_PHONE_NUMBER]: string;
+    [FormInputs.VOLUME]: string;
+    [FormInputs.WEIGHT]: string;
+    [FormInputs.OTHERS]: FileList;
+    [FormInputs.WAYBILLS]: FileList;
+    [FormInputs.SEND_POINT]: string;
+    [FormInputs.DESTINATION_POINT]: string;
+};
 
 export { StepIndex, FormInputs };
 

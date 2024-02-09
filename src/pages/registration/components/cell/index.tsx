@@ -1,15 +1,11 @@
 import styled from "styled-components";
-import { Typography } from "@mui/material";
 
 const Cell = styled.div`
+    width: 100%;
     height: 65px;
-    width: 360px;
     padding: 7px;
+    display: flex;
+    flex-direction: column;
 `;
 
-const CellErrorText = styled(Typography).attrs(() => ({
-    variant: "caption",
-    color: "error",
-}))``;
-
-export { Cell, CellErrorText };
+export { Cell };

@@ -45,15 +45,5 @@ export const theme = createTheme({
                 },
             },
         },
-        MuiAutocomplete: {
-            styleOverrides: {
-                root: {
-                    "& .MuiAutocomplete-endAdornment": {
-                        top: -3,
-                        right: "5px!important",
-                    },
-                },
-            },
-        },
     },
 });
