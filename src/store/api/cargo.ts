@@ -4,6 +4,7 @@ import {
     GetUserCargoArgType,
     CreateCargoArgType,
     CreateCargoRespType,
+    GetCargoRespType,
 } from "@/types.ts";
 
 const cargoApi = createApi({
@@ -36,9 +37,19 @@ const cargoApi = createApi({
                 params,
             }),
         }),
+        getCargo: builder.query<GetCargoRespType, number>({
+            query: (params) => ({
+                url: `/shipments/single/${params}`,
+                method: "GET",
+            }),
+        }),
     }),
 });
 
-export const { useCreateCargoMutation, useGetUserCargoesQuery } = cargoApi;
+export const {
+    useCreateCargoMutation,
+    useGetUserCargoesQuery,
+    useGetCargoQuery,
+} = cargoApi;
 
 export { cargoApi };

@@ -1,21 +1,22 @@
 import { styled } from "styled-components";
 import { Typography } from "@mui/material";
 
-const Cargo = styled.div``;
-
-const CargoItem = styled.div`
-    display: flex;
-    gap: 5px;
-`;
-
-const CargoTitle = styled(Typography).attrs(() => ({
+const CargoesTitle = styled(Typography).attrs(() => ({
     fontSize: "24px",
     fontWeight: "600",
 }))``;
 
-const CargoItemTitle = styled(Typography).attrs(() => ({
-    // fontSize: "18px",
-    fontWeight: "600",
-}))``;
+const CargoesHeader = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+`;
 
-export { Cargo, CargoItem, CargoTitle, CargoItemTitle };
+const CargoesContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding: 10px 40px;
+    flex: 1.5;
+`;
+
+export { CargoesTitle, CargoesHeader, CargoesContainer };

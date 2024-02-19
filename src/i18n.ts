@@ -33,8 +33,13 @@ export enum I18 {
     USER_CARGOES = "user_cargoes",
     TABLE_NAME = "table_name",
     TABLE_STATUS = "table_status",
+    TABLE_SN = "table_sn",
     ROWS_PER_PAGE = "rows_per_page",
     CLICK_TO_MOVE = "click_to_move",
+    TOOLTIP_NAME = "tooltip_name",
+    TOOLTIP_STATUS = "tooltip_status",
+    TOOLTIP_INFO = "tooltip_info",
+    SEARCH_BY = "search_by",
 }
 
 type I18Values = (typeof I18)[keyof typeof I18];
@@ -78,6 +83,11 @@ i18n.use(initReactI18next).init({
                 table_status: "status",
                 rows_per_page: "rows per page",
                 click_to_move: "click to move",
+                tooltip_name: "name:",
+                tooltip_status: "status:",
+                tooltip_info: "click to see full information",
+                search_by: "search by serial number",
+                table_sn: "serial number",
             } as I18Record,
         },
         ru: {
@@ -115,6 +125,11 @@ i18n.use(initReactI18next).init({
                 table_status: "статус",
                 rows_per_page: "строки на странице",
                 click_to_move: "нажмите, чтобы показать на карте",
+                tooltip_name: "название:",
+                tooltip_status: "статус:",
+                tooltip_info: "нажмите, чтобы открыть карточку",
+                search_by: "искать по серийному номеру",
+                table_sn: "серийный номер",
             } as I18Record,
         },
     },

@@ -24,6 +24,7 @@ const documentApi = createApi({
                     formData.append("others", doc);
                 });
 
+                console.info("id", id);
                 return {
                     url: `documents/create/${id}`,
                     method: "POST",

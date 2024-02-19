@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { cargoApi, documentApi, addressApi } from "@/store/api";
+import { cargoSlice } from "@/store/slice/cargo.ts";
 
 const store = () =>
     configureStore({
@@ -7,6 +8,7 @@ const store = () =>
             [cargoApi.reducerPath]: cargoApi.reducer,
             [documentApi.reducerPath]: documentApi.reducer,
             [addressApi.reducerPath]: addressApi.reducer,
+            cargo: cargoSlice.reducer,
         },
         middleware: (getDefaultMiddleware) =>
             getDefaultMiddleware().concat(

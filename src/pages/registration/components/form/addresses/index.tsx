@@ -60,7 +60,7 @@ const Addresses: React.FC<Props> = ({
                 />
                 <ErrorText>
                     {errors[FormInputs.DESTINATION_POINT]?.message &&
-                        errors[FormInputs.DESTINATION_POINT]?.message}
+                        t(errors[FormInputs.DESTINATION_POINT]?.message)}
                 </ErrorText>
             </Cell>
         </Block>

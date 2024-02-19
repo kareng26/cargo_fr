@@ -42,7 +42,7 @@ type SenderInfo = {
 };
 
 type CreateCargoRespType = {
-    id: string;
+    id: number;
     name: string;
     serial_number: string;
     description: string;
@@ -70,10 +70,6 @@ type Address = {
     geo_lon: string;
     qc_geo: "0" | "1" | "2" | "3" | "4" | "5";
     qc_house: null;
-};
-
-type DaData = {
-    suggestions: DaDataSuggestion[];
 };
 
 type CreateCargoArgType = {
@@ -119,6 +115,7 @@ type GetUserCargoDataType = {
     description: string;
     status: Array<CargoStatus>;
     created_at: string;
+    serial_number: string;
     send_address: {
         id: number;
         latitude: string;
@@ -154,18 +151,20 @@ type GetUserCargoArgType = {
     sorting?: string;
 };
 
+type GetCargoRespType = GetUserCargoDataType;
+
 export type {
     CreateCargoRespType,
     CreateDocumentArgs,
     CreateDocumentReturned,
     DaDataSuggestion,
-    DaData,
     Address,
     Coordinates,
     GetUserCargoArgType,
     CreateCargoArgType,
     GetUserCargoDataType,
     GetUserCargoRespType,
+    GetCargoRespType,
 };
 
 export { FiasLevels };

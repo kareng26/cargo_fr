@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-export const dateConverter = (date?: string, withSeconds: boolean = false) => {
+const dateConverter = (date?: string, withSeconds: boolean = false) => {
     if (!date) return "";
 
     const parsedDate = dayjs(date);
@@ -8,3 +8,5 @@ export const dateConverter = (date?: string, withSeconds: boolean = false) => {
         ? parsedDate.format(`DD.MM.YYYY HH:mm${withSeconds ? ":ss" : ""}`)
         : date;
 };
+
+export { dateConverter };

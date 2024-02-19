@@ -11,6 +11,13 @@ type Props = {
 const Container: React.FC<Props> = ({ children }) => {
     const { i18n } = useTranslation();
 
+    useEffect(() => {
+        if (window.location.pathname === "/") {
+            window.history.pushState({}, "", "/register");
+            window.dispatchEvent(new Event("popstate"));
+        }
+    }, []);
+
     const onChoose = (lng: string) => {
         i18n.changeLanguage(lng);
         localStorage.setItem("lng", lng);
@@ -19,9 +26,7 @@ const Container: React.FC<Props> = ({ children }) => {
     useEffect(() => {
         const lng = localStorage.getItem("lng");
         if (lng) {
-            console.info("lng", lng);
             i18n.changeLanguage(lng);
-            console.info("lng333", lng);
         }
     }, []);
 

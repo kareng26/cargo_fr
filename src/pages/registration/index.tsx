@@ -22,8 +22,7 @@ import { useCreateCargoMutation } from "@/store/api/cargo.ts";
 import { useCreateDocumentMutation } from "@/store/api";
 
 export const Registration: React.FC = () => {
-    const [createCargo, { data: cargo, isError: isCargoError }] =
-        useCreateCargoMutation();
+    const [createCargo, { isError: isCargoError }] = useCreateCargoMutation();
     const [createDocument, { isError: isDocumentError }] =
         useCreateDocumentMutation();
     const navigate = useNavigate();
@@ -64,7 +63,7 @@ export const Registration: React.FC = () => {
     };
 
     const onSubmit = async (data: FormValues) => {
-        await createCargo({
+        const resp = await createCargo({
             name: data.name,
             description: data.description,
             receiver_name: data.rFullName,
@@ -86,7 +85,8 @@ export const Registration: React.FC = () => {
             return;
         }
 
-        await handleCreateDocument(cargo!.id, data);
+        "data" in resp &&
+            (await handleCreateDocument(String(resp.data.id), data));
     };
 
     const handleNext = async () => {

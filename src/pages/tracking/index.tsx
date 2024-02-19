@@ -1,167 +1,131 @@
-import React, { useMemo, useRef, useState, useEffect } from "react";
-
+import React, { useRef, useState, useEffect } from "react";
 import mapboxgl from "mapbox-gl";
 import { motion } from "framer-motion";
-import Map, {
-    MapEvent,
-    Marker,
-    NavigationControl,
-    GeoJSONSource,
-} from "react-map-gl";
+import Map, { MapEvent, Marker, NavigationControl } from "react-map-gl";
 import { useTranslation } from "react-i18next";
-
 import "mapbox-gl/dist/mapbox-gl.css";
-
-import axios from "axios";
-
-import {
-    Cargoes,
-    CargoItem,
-    CargoItemTitle,
-    Container,
-    Content,
-    Title,
-    Tooltip,
-} from "./components";
-
-import { Typography } from "@mui/material";
+import { Cargoes, Container, Content, Title, Tooltip } from "./components";
 import { useAppSelector } from "@/hooks/useAppSelector.ts";
-import { ReceivePoint, SendPoint } from "@/assets/icons";
-import { Coordinates } from "@/types.ts";
+import { ReceivePoint, SendPoint, Truck } from "@/assets/icons";
+import {
+    Coordinates,
+    CreateCargoRespType,
+    GetUserCargoDataType,
+} from "@/types.ts";
+import { defaultCoords, variants } from "@/pages/tracking/const.ts";
+import { createRoute } from "@/pages/tracking/api.ts";
+import { ExMapBox } from "@/pages/tracking/types.ts";
+import { findArrayMiddle } from "@/utils/arrays.ts";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_GL_PT;
 
-const variants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.5,
-            ease: "easeInOut",
-        },
-    },
+// temp decision
+type TruckPlaces = {
+    Создано: number;
+    Получено: number;
 };
 
-async function getRoute(
-    map: mapboxgl.Map,
-    sLatitude: number,
-    sLongitude: number,
-    rLatitude: number,
-    rLongitude: number,
-) {
-    const { data } = await axios.get(
-        `${
-            import.meta.env.VITE_MAPBOX_API
-        }${sLongitude},${sLatitude};${rLongitude},${rLatitude}?steps=true&geometries=geojson&access_token=${
-            mapboxgl.accessToken
-        }`,
-    );
-    const coordinates = data.routes[0].geometry.coordinates;
-
-    const geoJson: GeoJSON.Feature<GeoJSON.Geometry> = {
-        type: "Feature",
-        properties: {},
-        geometry: {
-            type: "LineString",
-            coordinates,
-        },
-    };
-
-    if (map.getSource("route")) {
-        (map.getSource("route") as GeoJSONSource).setData(geoJson);
-    } else {
-        map.addLayer({
-            id: "route",
-            type: "line",
-            source: {
-                type: "geojson",
-                data: geoJson,
-            },
-            layout: {
-                "line-join": "round",
-                "line-cap": "round",
-            },
-            paint: {
-                "line-color": "#2f3642",
-                "line-width": 3,
-                "line-opacity": 0.75,
-            },
-        });
-    }
-}
-
 export const Tracking: React.FC = () => {
+    const { i18n } = useTranslation();
+
     const data = useAppSelector((state) => state.cargo);
 
     const mapRef = useRef<mapboxgl.Map>();
 
-    type ExMapBox = typeof mapRef.current & {
-        language: string;
-        setLanguage: (language: string) => void;
-    };
+    const [cargo, setCargo] = useState<
+        GetUserCargoDataType | CreateCargoRespType
+    >(data?.cargo);
 
-    const [cargo, setCargo] = useState(data?.cargo);
+    const [truckCoords, setTruckCoords] = useState<Array<number>>();
 
-    const [viewState, setViewState] = React.useState<Coordinates>();
+    const [viewState, setViewState] = React.useState<
+        Coordinates & { zoom: number }
+    >();
 
-    const { i18n } = useTranslation();
+    const rLat = Number(cargo?.receiver_address?.latitude);
+    const rLng = Number(cargo?.receiver_address?.longitude);
 
-    const changeView = (cargo) => {
+    const sLat = Number(cargo?.send_address?.latitude);
+    const sLng = Number(cargo?.send_address?.longitude);
+
+    useEffect(() => {
+        const handleLanguageChange = () => {
+            (mapRef.current as ExMapBox)?.setLanguage(i18n.language);
+        };
+
+        i18n.on("languageChanged", handleLanguageChange);
+
+        return () => {
+            i18n.off("languageChanged", handleLanguageChange);
+        };
+    }, [i18n.language]);
+
+    const changeView = async (cargo: GetUserCargoDataType) => {
         if (mapRef.current && cargo?.id) {
-            getRoute(
+            const coordinates = await createRoute(
                 mapRef.current,
-                cargo?.send_address?.latitude,
-                cargo?.send_address?.longitude,
-                cargo?.receiver_address?.latitude,
-                cargo?.receiver_address?.longitude,
+                Number(cargo?.send_address?.latitude),
+                Number(cargo?.send_address?.longitude),
+                Number(cargo?.receiver_address?.latitude),
+                Number(cargo?.receiver_address?.longitude),
             );
+            const truckPlaces: TruckPlaces = {
+                Создано: 2,
+                Получено: coordinates.length - 2,
+            };
+            if (cargo?.status[cargo?.status?.length - 1]?.name === "В пути") {
+                return findArrayMiddle(coordinates);
+            }
+            return coordinates[
+                truckPlaces?.[
+                    cargo?.status[cargo?.status?.length - 1]
+                        ?.name as keyof TruckPlaces
+                ]
+            ];
         }
     };
 
-    const MotionDiv = useMemo(() => motion.div, []);
-
-    const onRowClick = (row: any) => {
+    const onRowClick = async (row: GetUserCargoDataType) => {
         setCargo(row);
-        setViewState({
-            latitude: row?.send_address?.latitude,
-            longitude: row?.send_address?.longitude,
-        });
-        changeView(row);
+        const coords = await changeView(row);
+        if (coords) {
+            setTruckCoords(coords);
+            setViewState({
+                latitude: coords?.[1],
+                longitude: coords?.[0],
+                zoom: 18,
+            });
+        }
     };
 
-    const onLoad = (target: MapEvent["target"]) => {
+    const onLoad = async (target: MapEvent["target"]) => {
         mapRef.current = target;
-        changeView(cargo);
+        const coords = await changeView(cargo);
+
+        if (coords?.length) {
+            setTruckCoords(coords);
+
+            setViewState({
+                latitude: coords?.[1],
+                longitude: coords?.[0],
+                zoom: 18,
+            });
+        }
 
         if (i18n.language !== "en") {
             (mapRef.current as ExMapBox)?.setLanguage(i18n.language);
         }
     };
 
-    useEffect(() => {
-        if ((mapRef.current as ExMapBox)?._language !== i18n.language) {
-            const handleLanguageChange = () => {
-                (mapRef.current as ExMapBox)?.setLanguage(i18n.language);
-            };
-
-            i18n.on("languageChanged", handleLanguageChange);
-
-            return () => {
-                i18n.off("languageChanged", handleLanguageChange);
-            };
-        }
-    }, [i18n.language]);
-
     return (
         <Container>
-            <MotionDiv
+            <motion.div
                 initial={"hidden"}
                 animate={"visible"}
                 variants={variants}
             >
                 <Title>{"CARGO"}</Title>
-            </MotionDiv>
+            </motion.div>
             <Content>
                 <Map
                     {...viewState}
@@ -170,51 +134,32 @@ export const Tracking: React.FC = () => {
                     onLoad={(event) => onLoad(event.target)}
                     onMove={(event) => setViewState(event.viewState)}
                     initialViewState={{
-                        longitude:
-                            cargo?.receiver_address?.longitude || 40.173463,
-                        latitude:
-                            cargo?.receiver_address?.latitude || 44.507371,
                         zoom: 12,
+                        longitude: rLng || defaultCoords.longitude,
+                        latitude: rLat || defaultCoords.latitude,
                     }}
                     style={{ height: "100%", minHeight: "90vh", flex: 3 }}
                 >
+                    {truckCoords && (
+                        <Marker
+                            longitude={truckCoords[0]}
+                            latitude={truckCoords[1]}
+                        >
+                            <Truck />
+                        </Marker>
+                    )}
                     {cargo?.id && (
                         <>
-                            <Marker
-                                longitude={cargo.send_address?.longitude}
-                                latitude={cargo.send_address?.latitude}
-                                anchor={"center"}
-                            >
+                            <Marker longitude={sLng} latitude={sLat}>
                                 <SendPoint />
                             </Marker>
-                            <Marker
-                                longitude={cargo.receiver_address?.longitude}
-                                latitude={cargo.receiver_address?.latitude}
-                                anchor={"center"}
-                            >
+                            <Marker longitude={rLng} latitude={rLat}>
                                 <ReceivePoint />
                             </Marker>
                         </>
                     )}
-                    <NavigationControl />
-                    {cargo?.id && (
-                        <Tooltip>
-                            <CargoItem>
-                                <CargoItemTitle>{"name:"}</CargoItemTitle>
-                                <Typography>{cargo?.name}</Typography>
-                            </CargoItem>
-                            <CargoItem>
-                                <CargoItemTitle>{"status:"}</CargoItemTitle>
-                                <Typography color={"#1a9861"}>
-                                    {
-                                        cargo?.status?.[
-                                            cargo?.status?.length - 1
-                                        ]?.name
-                                    }
-                                </Typography>
-                            </CargoItem>
-                        </Tooltip>
-                    )}
+                    <NavigationControl showCompass={false} />
+                    {cargo?.id && <Tooltip cargo={cargo} />}
                 </Map>
                 <Cargoes onRowClick={onRowClick} />
             </Content>

@@ -1,18 +1,23 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Registration } from "./registration";
-import { Tracking } from "./tracking";
+import { Registration } from "@/pages/registration";
+import { Tracking } from "@/pages/tracking";
+import { Dashboard } from "@/pages/dashboard";
 
 export const router = createBrowserRouter([
     {
         path: "/",
         children: [
             {
-                path: "/",
+                path: "/register",
                 element: <Registration />,
             },
             {
                 path: "/tracking",
                 element: <Tracking />,
+            },
+            {
+                path: "/dashboard",
+                element: <Dashboard />,
             },
         ],
     },
