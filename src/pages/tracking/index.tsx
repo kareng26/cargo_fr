@@ -1,29 +1,23 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
-import { motion } from "framer-motion";
 import Map, { MapEvent, Marker, NavigationControl } from "react-map-gl";
 import { useTranslation } from "react-i18next";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Cargoes, Container, Content, Title, Tooltip } from "./components";
-import { useAppSelector } from "@/hooks/useAppSelector.ts";
+import { Content, Tooltip, Cargoes } from "./components";
+import { useAppSelector } from "@/hooks";
 import { ReceivePoint, SendPoint, Truck } from "@/assets/icons";
 import {
     Coordinates,
     CreateCargoRespType,
     GetUserCargoDataType,
 } from "@/types.ts";
-import { defaultCoords, variants } from "@/pages/tracking/const.ts";
+import { defaultCoords } from "@/pages/tracking/const.ts";
 import { createRoute } from "@/pages/tracking/api.ts";
-import { ExMapBox } from "@/pages/tracking/types.ts";
-import { findArrayMiddle } from "@/utils/arrays.ts";
+import { ExMapBox, TruckPlaces } from "@/pages/tracking/types.ts";
+import { findArrayMiddle } from "@/utils";
+import { AnimatedTitle } from "@/components/animatedTitle";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_GL_PT;
-
-// temp decision
-type TruckPlaces = {
-    Создано: number;
-    Получено: number;
-};
 
 export const Tracking: React.FC = () => {
     const { i18n } = useTranslation();
@@ -49,9 +43,8 @@ export const Tracking: React.FC = () => {
     const sLng = Number(cargo?.send_address?.longitude);
 
     useEffect(() => {
-        const handleLanguageChange = () => {
+        const handleLanguageChange = () =>
             (mapRef.current as ExMapBox)?.setLanguage(i18n.language);
-        };
 
         i18n.on("languageChanged", handleLanguageChange);
 
@@ -70,17 +63,16 @@ export const Tracking: React.FC = () => {
                 Number(cargo?.receiver_address?.longitude),
             );
             const truckPlaces: TruckPlaces = {
-                Создано: 2,
-                Получено: coordinates.length - 2,
+                Создано: 1,
+                "Передано в доставку": 4,
+                Получено: coordinates.length - 1,
             };
-            if (cargo?.status[cargo?.status?.length - 1]?.name === "В пути") {
+
+            if (cargo?.current_status?.name === "В пути") {
                 return findArrayMiddle(coordinates);
             }
             return coordinates[
-                truckPlaces?.[
-                    cargo?.status[cargo?.status?.length - 1]
-                        ?.name as keyof TruckPlaces
-                ]
+                truckPlaces?.[cargo?.current_status?.name as keyof TruckPlaces]
             ];
         }
     };
@@ -118,18 +110,13 @@ export const Tracking: React.FC = () => {
     };
 
     return (
-        <Container>
-            <motion.div
-                initial={"hidden"}
-                animate={"visible"}
-                variants={variants}
-            >
-                <Title>{"CARGO"}</Title>
-            </motion.div>
+        <div>
+            <AnimatedTitle />
             <Content>
                 <Map
                     {...viewState}
                     attributionControl={false}
+                    // mapStyle={"mapbox://styles/mapbox/streets-v9"}
                     mapStyle={"mapbox://styles/mapbox/light-v11"}
                     onLoad={(event) => onLoad(event.target)}
                     onMove={(event) => setViewState(event.viewState)}
@@ -163,6 +150,6 @@ export const Tracking: React.FC = () => {
                 </Map>
                 <Cargoes onRowClick={onRowClick} />
             </Content>
-        </Container>
+        </div>
     );
 };

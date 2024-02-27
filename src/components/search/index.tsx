@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import { TextField } from "@mui/material";
-import { useOutside } from "@/hooks/useOutside.ts";
+import { useOutside } from "@/hooks";
 import { TextFieldProps } from "@mui/material/TextField/TextField";
 import { List } from "@/components/list";
 import { useGetAddressesQuery } from "@/store/api/address.ts";

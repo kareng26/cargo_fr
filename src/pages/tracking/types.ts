@@ -3,4 +3,10 @@ type ExMapBox = mapboxgl.Map & {
     setLanguage: (language: string) => void;
 };
 
-export type { ExMapBox };
+type TruckPlaces = {
+    Создано: number;
+    Получено: number;
+    "Передано в доставку": number;
+};
+
+export type { ExMapBox, TruckPlaces };

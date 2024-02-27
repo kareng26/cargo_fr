@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
+
 import { Container, Box, Title, Buttons } from "./components";
 import { Wrapper } from "@/components/wrapper";
 import { FormInputs, FormValues, StepIndex } from "./types.ts";
 import { Steps } from "./const.ts";
-import { ValidationErrors } from "@/consts/validation.ts";
+import { ValidationErrors } from "@/consts";
 import {
     MainInformation,
     ReceiverInformation,
@@ -15,22 +17,27 @@ import {
     Documents,
     Specifications,
 } from "@/pages/registration/components/form";
-import { useTranslation } from "react-i18next";
 import { I18 } from "@/i18n.ts";
 import { Address, FiasLevels } from "@/types.ts";
 import { useCreateCargoMutation } from "@/store/api/cargo.ts";
 import { useCreateDocumentMutation } from "@/store/api";
+import { Loader } from "@/components/loader";
 
 export const Registration: React.FC = () => {
-    const [createCargo, { isError: isCargoError }] = useCreateCargoMutation();
-    const [createDocument, { isError: isDocumentError }] =
-        useCreateDocumentMutation();
+    const [createCargo, { isError: isCargoError, isLoading: isCargoLoading }] =
+        useCreateCargoMutation();
+    const [
+        createDocument,
+        { isError: isDocumentError, isLoading: isDocumentLoading },
+    ] = useCreateDocumentMutation();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
     const [currentStep, setCurrentStep] = useState<number>(
         StepIndex.MAIN_INFORMATION,
     );
+
+    const isLoading = isCargoLoading || isDocumentLoading;
 
     const {
         register,
@@ -170,7 +177,11 @@ export const Registration: React.FC = () => {
                     />
                     <Buttons>
                         {currentStep > 0 && (
-                            <Button type={"button"} onClick={handlePrev}>
+                            <Button
+                                disabled={isLoading}
+                                type={"button"}
+                                onClick={handlePrev}
+                            >
                                 {t(I18.PREVIOUS)}
                             </Button>
                         )}
@@ -180,7 +191,13 @@ export const Registration: React.FC = () => {
                             </Button>
                         )}
                         {currentStep === Steps.length - 1 && (
-                            <Button type={"submit"}>{t(I18.CREATE)}</Button>
+                            <Button disabled={isLoading} type={"submit"}>
+                                {isLoading ? (
+                                    <Loader size={15} />
+                                ) : (
+                                    t(I18.CREATE)
+                                )}
+                            </Button>
                         )}
                     </Buttons>
                 </Box>

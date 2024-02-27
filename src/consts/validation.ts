@@ -1,3 +1,5 @@
+import { I18 } from "@/i18n.ts";
+
 enum Errors {
     required = "required",
     pattern = "pattern",
@@ -17,11 +19,11 @@ enum MaskValues {
 }
 
 const ValidationErrors = Object.freeze<Record<Errors, string>>({
-    [Errors.required]: "empty",
-    [Errors.incorrectAddress]: "incorrect_address",
-    [Errors.pattern]: "doesnt_match",
-    [Errors.minLength]: "more_than_2",
-    [Errors.maxLength]: "less_than_30",
+    [Errors.required]: I18.EMPTY,
+    [Errors.incorrectAddress]: I18.INCORRECT_ADDRESS,
+    [Errors.pattern]: I18.DOESNT_MATCH,
+    [Errors.minLength]: I18.MORE_THAN_2,
+    [Errors.maxLength]: I18.LESS_THAN_30,
 });
 
 const ValidationPatterns = Object.freeze<Record<Patterns, RegExp>>({

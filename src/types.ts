@@ -55,6 +55,7 @@ type CreateCargoRespType = {
     receiver_address: ReceiverAddress;
     carrier: Carrier;
     status: Array<Status>;
+    current_status: Status;
     documents: Array<Document>;
     sender_info: SenderInfo;
 };
@@ -107,6 +108,8 @@ type Coordinates = {
 type CargoStatus = {
     id: number;
     name: string;
+    created_at: string;
+    description: string;
 };
 
 type GetUserCargoDataType = {
@@ -116,18 +119,9 @@ type GetUserCargoDataType = {
     status: Array<CargoStatus>;
     created_at: string;
     serial_number: string;
-    send_address: {
-        id: number;
-        latitude: string;
-        longitude: string;
-        name: string;
-    };
-    receiver_address: {
-        id: number;
-        latitude: string;
-        longitude: string;
-        name: string;
-    };
+    current_status: CargoStatus;
+    send_address: SendAddress;
+    receiver_address: ReceiverAddress;
 };
 
 type Meta = {
@@ -151,7 +145,24 @@ type GetUserCargoArgType = {
     sorting?: string;
 };
 
-type GetCargoRespType = GetUserCargoDataType;
+type GetCargoRespType = {
+    id: number;
+    name: string;
+    description: string;
+    created_at: string;
+    weight: number;
+    volume: number;
+    status: Array<CargoStatus>;
+    current_status: CargoStatus;
+    serial_number: string;
+    sender_info: SenderInfo;
+    send_address: SendAddress;
+    receiver_name: string;
+    receiver_contact: string;
+    receiver_address: ReceiverAddress;
+    documents: Array<Document>;
+    carrier: null;
+};
 
 export type {
     CreateCargoRespType,

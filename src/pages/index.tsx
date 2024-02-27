@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { Registration } from "@/pages/registration";
 import { Tracking } from "@/pages/tracking";
 import { Dashboard } from "@/pages/dashboard";
+import { Cargo } from "@/pages/cargo";
 
 export const router = createBrowserRouter([
     {
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
             {
                 path: "/dashboard",
                 element: <Dashboard />,
+            },
+            {
+                path: "/cargo/:id",
+                element: <Cargo />,
             },
         ],
     },
