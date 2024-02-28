@@ -1,7 +1,7 @@
-import ECharts from "echarts-for-react";
+import ReactEcharts from "echarts-for-react";
 import { styled } from "styled-components";
 
-const Chart = styled(ECharts)`
+const Chart = styled(ReactEcharts)`
     height: 380px !important;
 `;
 
