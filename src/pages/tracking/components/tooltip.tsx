@@ -14,7 +14,6 @@ type Props = {
 
 const Tooltip: React.FC<Props> = ({ cargo }) => {
     const navigate = useNavigate();
-    console.info("cargo", cargo);
 
     return (
         <Container>

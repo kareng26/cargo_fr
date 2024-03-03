@@ -4,3 +4,4 @@ export * from "./content.tsx";
 export * from "./tooltip.tsx";
 export * from "./pointer.tsx";
 export * from "./search.tsx";
+export * from "./marker.tsx";

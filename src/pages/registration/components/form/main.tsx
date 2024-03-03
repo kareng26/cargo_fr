@@ -58,6 +58,10 @@ const MainInformation: React.FC<Props> = ({
                     label={t(I18.DESCRIPTION)}
                     {...register(FormInputs.DESCRIPTION, {
                         required: t(ValidationErrors.required),
+                        pattern: {
+                            value: ValidationPatterns.string,
+                            message: t(ValidationErrors.pattern),
+                        },
                         minLength: {
                             value: 3,
                             message: t(ValidationErrors.minLength),

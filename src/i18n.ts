@@ -22,6 +22,7 @@ export enum I18 {
     OTHERS = "others",
     ADDRESSES = "addresses",
     SEND_POINT = "send_point",
+    RECEIVER_POINT = "receiver_point",
     DESTINATION_POINT = "destination_point",
     PREVIOUS = "previous",
     NEXT = "next",
@@ -54,6 +55,7 @@ export enum I18 {
     RECEIVER_ADDRESS = "receiver_address",
     SIGNED_IN = "signed_in",
     NOT_ACCESSED = "not_accessed",
+    CARGO = "cargo",
 }
 
 type I18Values = (typeof I18)[keyof typeof I18];
@@ -116,6 +118,9 @@ i18n.use(initReactI18next).init({
                 receiver_address: "receiver address",
                 signed_in: "signed in",
                 not_accessed: "not accessed to manage",
+                relative_coords: "cargo coordinates are relative",
+                cargo: "cargo",
+                receiver_point: "receiver point",
             } as I18Record,
         },
         ru: {
@@ -172,6 +177,8 @@ i18n.use(initReactI18next).init({
                 receiver_address: "адрес получателя",
                 signed_in: "авторизован",
                 not_accessed: "нет доступа к управлению",
+                relative_coords: "координаты груза относительны",
+                cargo: "груз",
             } as I18Record,
         },
     },

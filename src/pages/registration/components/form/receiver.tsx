@@ -48,7 +48,7 @@ const ReceiverInformation: React.FC<Props> = ({
                     {...register(FormInputs.R_FULL_NAME, {
                         required: t(ValidationErrors.required),
                         pattern: {
-                            value: ValidationPatterns.string,
+                            value: ValidationPatterns.name,
                             message: t(ValidationErrors.pattern),
                         },
                     })}
