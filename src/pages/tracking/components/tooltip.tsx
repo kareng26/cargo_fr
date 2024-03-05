@@ -7,6 +7,7 @@ import { CreateCargoRespType, GetUserCargoDataType } from "@/types.ts";
 import { Info } from "@/components/info";
 import { useNavigate } from "react-router-dom";
 import { Statuses } from "@/pages/dashboard/types.ts";
+import { Colors } from "@/assets/colors";
 
 type Props = {
     cargo: GetUserCargoDataType | CreateCargoRespType;
@@ -51,7 +52,7 @@ const Container = styled.div`
     height: 160px;
     bottom: 20%;
     padding: 20px;
-    background-color: #fff;
+    background-color: ${Colors.BLANC};
     overflow-y: scroll;
     font-family: sans-serif;
     box-shadow: 0 1px 10px rgba(0, 0, 0, 0.15);
@@ -79,6 +80,6 @@ const ItemText = styled(Typography).attrs(() => ({
     fontSize: "16px",
 }))`
     &#status {
-        color: #1a9861;
+        color: ${Colors.VERT_GOLF};
     }
 `;

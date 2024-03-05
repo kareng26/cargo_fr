@@ -1,15 +1,16 @@
 import { createTheme } from "@mui/material";
+import { Colors } from "@/assets/colors";
 
 export const theme = createTheme({
     palette: {
         primary: {
-            main: "#2f3642",
+            main: Colors.OCTAVE,
         },
     },
     typography: {
         fontFamily: "revert-layer",
         allVariants: {
-            color: "#2f3642",
+            color: Colors.OCTAVE,
         },
     },
     components: {

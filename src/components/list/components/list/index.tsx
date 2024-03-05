@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { Colors } from "@/assets/colors";
 
 const List = styled.ul`
     width: 100%;
@@ -6,11 +7,11 @@ const List = styled.ul`
     position: relative;
     z-index: 667;
     overflow: scroll;
-    background: white;
+    background: ${Colors.BLANC};
     scrollbar-gutter: unset;
-    border: 0.5px solid #2f3642;
+    border: 0.5px solid ${Colors.OCTAVE};
     border-radius: 4px;
-    box-shadow: 0 3px 5px rgba(47, 54, 66, 0.2); /* Add box shadow */
+    box-shadow: 0 3px 5px ${Colors.DIAPHANE_OCTIVE};
 `;
 
 export { List };

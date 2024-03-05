@@ -53,6 +53,7 @@ export enum I18 {
     RECEIVER_NAME = "receiver_name",
     RECEIVER_PHONE = "receiver_phone",
     RECEIVER_ADDRESS = "receiver_address",
+    RELATIVE_COORDS = "relative_coords",
     SIGNED_IN = "signed_in",
     NOT_ACCESSED = "not_accessed",
     CARGO = "cargo",
@@ -183,7 +184,7 @@ i18n.use(initReactI18next).init({
         },
     },
     lng: "en",
-    fallbackLng: "en",
+    fallbackLng: "ru",
     interpolation: {
         escapeValue: false,
     },

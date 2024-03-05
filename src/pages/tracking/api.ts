@@ -1,4 +1,5 @@
 import mapboxgl, { GeoJSONSource } from "mapbox-gl";
+import { Colors } from "@/assets/colors";
 
 const createRoute = async (
     map: mapboxgl.Map,
@@ -42,7 +43,7 @@ const createRoute = async (
                 "line-cap": "round",
             },
             paint: {
-                "line-color": "#2f3642",
+                "line-color": Colors.OCTAVE,
                 "line-width": 3,
                 "line-opacity": 0.75,
             },

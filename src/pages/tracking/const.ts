@@ -11,8 +11,8 @@ const variants = {
 };
 
 const defaultCoords = {
-    longitude: 40.173463,
-    latitude: 44.507371,
+    longitude: 43.84215,
+    latitude: 40.78519,
 };
 
 export { variants, defaultCoords };

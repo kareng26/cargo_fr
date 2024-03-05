@@ -5,3 +5,5 @@ export * from "./tooltip.tsx";
 export * from "./pointer.tsx";
 export * from "./search.tsx";
 export * from "./marker.tsx";
+export * from "./helperText.tsx";
+export * from "./map.tsx";

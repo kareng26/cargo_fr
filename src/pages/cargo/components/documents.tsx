@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+import { Colors } from "@/assets/colors";
 
 const Documents = styled.div`
     display: flex;
@@ -17,7 +18,7 @@ const DocItems = styled.div`
 `;
 
 const DocItemInfo = styled.div`
-    color: #2f364233;
+    color: ${Colors.DIAPHANE_OCTIVE};
     font-size: 11px;
 `;
 

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { User } from "@/assets/icons";
 import { I18 } from "@/i18n.ts";
 import { UserInfo, Base, Switcher } from "@/components/container/components";
+import { Languages } from "@/types.ts";
 
 type Props = {
     children: React.ReactNode;
@@ -35,21 +36,21 @@ const Container: React.FC<Props> = ({ children }) => {
         <>
             <Switcher
                 input={<Base />}
-                IconComponent={() => null}
-                variant={"standard"}
                 value={i18n.language}
+                variant={"standard"}
+                IconComponent={() => null}
             >
                 <MenuItem
-                    disabled={i18n.language === "en"}
-                    onClick={() => onChoose("en")}
-                    value={"en"}
+                    disabled={i18n.language === Languages.EN}
+                    onClick={() => onChoose(Languages.EN)}
+                    value={Languages.EN}
                 >
                     {"EN"}
                 </MenuItem>
                 <MenuItem
-                    disabled={i18n.language === "ru"}
-                    onClick={() => onChoose("ru")}
-                    value={"ru"}
+                    disabled={i18n.language === Languages.RU}
+                    onClick={() => onChoose(Languages.RU)}
+                    value={Languages.RU}
                 >
                     {"RU"}
                 </MenuItem>

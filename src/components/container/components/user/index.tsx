@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+import { Colors } from "@/assets/colors";
 
 const UserInfo = styled.div`
     position: fixed;
@@ -10,7 +11,7 @@ const UserInfo = styled.div`
 
     & > span {
         font-size: 10px;
-        color: #2f364233;
+        color: ${Colors.DIAPHANE_OCTIVE};
     }
 `;
 

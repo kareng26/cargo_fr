@@ -1,7 +1,8 @@
 import { styled } from "styled-components";
+import { Colors } from "@/assets/colors";
 
 const StepInfo = styled.span`
-    color: #2f364233;
+    color: ${Colors.DIAPHANE_OCTIVE};
     font-size: 11px;
 `;
 

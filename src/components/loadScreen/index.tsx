@@ -16,7 +16,6 @@ const Wrap = styled.div`
     right: 0;
     width: 100%;
     height: 100%;
-    //background-color: rgba(152, 148, 141, 0.29);
     display: flex;
     justify-content: center;
     align-items: center;

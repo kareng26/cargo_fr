@@ -1,5 +1,6 @@
 import React, { forwardRef } from "react";
 import styled from "styled-components";
+import { Colors } from "@/assets/colors";
 
 export type TitleProps = React.HTMLAttributes<HTMLDivElement> & {
     children: React.ReactNode;
@@ -29,10 +30,10 @@ const StyledTitle = styled.div<TitleProps>`
     z-index: 1000;
     background: linear-gradient(
         to right,
-        #8d71fe 20%,
-        #ffd32b 30%,
-        #4dc2ff 50%,
-        #bc942c 80%
+        ${Colors.BLEU_LAVANDE} 20%,
+        ${Colors.REGARDS_FURTIFS} 30%,
+        ${Colors.BLEU_MAYA} 50%,
+        ${Colors.RUBAN_A_CHEVEUX} 80%
     );
     -webkit-background-clip: text;
     background-clip: text;

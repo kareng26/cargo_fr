@@ -100,6 +100,11 @@ enum FiasLevels {
     APARTMENT = "9",
 }
 
+enum Languages {
+    EN = "en",
+    RU = "ru",
+}
+
 type Coordinates = {
     latitude: number;
     longitude: number;
@@ -178,4 +183,4 @@ export type {
     GetCargoRespType,
 };
 
-export { FiasLevels };
+export { FiasLevels, Languages };

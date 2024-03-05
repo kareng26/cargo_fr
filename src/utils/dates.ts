@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-const dateConverter = (date?: string | Date, withSeconds: boolean = false) => {
+const dateConverter = (date?: string, withSeconds: boolean = false) => {
     if (!date) return "";
 
     const parsedDate = dayjs(date);

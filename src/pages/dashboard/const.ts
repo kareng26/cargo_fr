@@ -1,4 +1,5 @@
 import { OptionArgs } from "@/pages/dashboard/types.ts";
+import { Colors } from "@/assets/colors";
 
 const getOption = (data: Array<OptionArgs>) => ({
     tooltip: {
@@ -18,7 +19,7 @@ const getOption = (data: Array<OptionArgs>) => ({
                 itemStyle: {
                     shadowBlur: 10,
                     shadowOffsetX: 0,
-                    shadowColor: "rgba(0, 0, 0, 0.5)",
+                    shadowColor: Colors.DIAPHANE_AILE_DE_CORBEAU,
                 },
             },
         },

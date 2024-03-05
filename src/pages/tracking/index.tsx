@@ -3,31 +3,33 @@ import mapboxgl from "mapbox-gl";
 import Map, { MapEvent, NavigationControl } from "react-map-gl";
 import { useTranslation } from "react-i18next";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { Cargoes, Content, Tooltip, Marker } from "./components";
+import {
+    Cargoes,
+    Content,
+    Tooltip,
+    Marker,
+    HelperText,
+    MapWrap,
+} from "./components";
 import { useAppSelector } from "@/hooks";
 import { ReceivePoint, SendPoint, Truck } from "@/assets/icons";
 import {
     Coordinates,
     CreateCargoRespType,
     GetUserCargoDataType,
+    Languages,
 } from "@/types.ts";
 import { defaultCoords } from "@/pages/tracking/const.ts";
 import { createRoute } from "@/pages/tracking/api.ts";
 import { ExMapBox, TruckPlaces } from "@/pages/tracking/types.ts";
-import { addTime, dateConverter, findArrayMiddle } from "@/utils";
+import { findArrayMiddle } from "@/utils";
 import { AnimatedTitle } from "@/components/animatedTitle";
 import { I18 } from "@/i18n.ts";
-import MapboxDirections from "@mapbox/mapbox-sdk/services/directions";
-import { GeolocateControl } from "react-map-gl/dist/esm/exports-mapbox";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_GL_PT;
 
 export const Tracking: React.FC = () => {
     const { i18n, t } = useTranslation();
-
-    const geoControlRef = useRef<any>();
-
-    console.log("geoControlRef", geoControlRef);
 
     const data = useAppSelector((state) => state.cargo);
 
@@ -60,49 +62,43 @@ export const Tracking: React.FC = () => {
         };
     }, [i18n.language]);
 
-    useEffect(() => {
-        const calculateRoute = async () => {
-            const directionsService = new MapboxDirections({
-                accessToken: mapboxgl.accessToken,
-            });
+    // useEffect(() => {
+    //     const calculateRoute = async () => {
+    //         const directionsService = MapboxDirections({ accessToken: mapboxgl.accessToken });
+    //
+    //         const response = await directionsService
+    //             .getDirections({
+    //                 waypoints: [
+    //                     { coordinates: [sLng, sLat] },
+    //                     { coordinates: [rLng, rLat] },
+    //                 ],
+    //                 profile: "driving", // Можно также использовать 'cycling', 'walking', 'driving-traffic' и т.д.
+    //                 geometries: "geojson",
+    //             })
+    //             .send();
+    //
+    //         const originalTime = new Date("2024-02-29T14:17:24.104Z");
+    //         console.log("originalTime", originalTime);
+    //
+    //         const routeDuration = response.body.routes[0].duration; // Duration in seconds
+    //
+    //         // Convert duration to hours and minutes
+    //         const hours = Math.floor(routeDuration / 3600);
+    //         const minutes = Math.floor((routeDuration % 3600) / 60);
+    //
+    //         return {
+    //             hours,
+    //             minutes,
+    //             cargoDate: cargo?.current_status?.created_at,
+    //             origTime: dateConverter(addTime(originalTime, hours, minutes)),
+    //         };
+    //     };
+    //
+    //     calculateRoute().then((res) => {
+    //         console.log("here", res);
+    //     });
+    // }, []);
 
-            // if (!isNaN(sLng)) {
-            const response = await directionsService
-                .getDirections({
-                    waypoints: [
-                        { coordinates: [sLng, sLat] },
-                        { coordinates: [rLng, rLat] },
-                    ],
-                    profile: "driving", // Можно также использовать 'cycling', 'walking', 'driving-traffic' и т.д.
-                    geometries: "geojson",
-                })
-                .send();
-
-            const originalTime = new Date("2024-02-29T14:17:24.104Z");
-            console.log("originalTime", originalTime);
-
-            const routeDuration = response.body.routes[0].duration; // Duration in seconds
-
-            // Convert duration to hours and minutes
-            const hours = Math.floor(routeDuration / 3600);
-            const minutes = Math.floor((routeDuration % 3600) / 60);
-
-            return {
-                hours,
-                minutes,
-                cargoDate: cargo?.current_status?.created_at,
-                origTime: dateConverter(addTime(originalTime, hours, minutes)),
-            };
-        };
-
-        // const routeDuration = response.body.routes[0].duration; // Получаем время поездки в секундах
-        // setDuration(routeDuration);
-        // };
-
-        calculateRoute().then((res) => {
-            console.log("here", res);
-        });
-    }, []);
     const changeView = async (cargo: GetUserCargoDataType) => {
         if (mapRef.current && cargo?.id) {
             const coordinates = await createRoute(
@@ -154,7 +150,7 @@ export const Tracking: React.FC = () => {
             });
         }
 
-        if (i18n.language !== "en") {
+        if (i18n.language !== Languages.EN) {
             (mapRef.current as ExMapBox)?.setLanguage(i18n.language);
         }
     };
@@ -163,11 +159,10 @@ export const Tracking: React.FC = () => {
         <div>
             <AnimatedTitle />
             <Content>
-                <div style={{ flex: 3, minHeight: "87vh" }}>
+                <MapWrap>
                     <Map
                         {...viewState}
                         attributionControl={false}
-                        // mapStyle={"mapbox://styles/mapbox/streets-v12"}
                         mapStyle={"mapbox://styles/mapbox/light-v11"}
                         onLoad={(event) => onLoad(event.target)}
                         onMove={(event) => setViewState(event.viewState)}
@@ -199,24 +194,13 @@ export const Tracking: React.FC = () => {
                                 </Marker>
                             </>
                         )}
-                        <GeolocateControl ref={geoControlRef} />
                         <NavigationControl showCompass={false} />
                         {cargo?.id && <Tooltip cargo={cargo} />}
                     </Map>
-                    <span
-                        style={{
-                            fontSize: 13,
-                            // color: "#2f364233",
-                            display: "flex",
-                            fontStyle: "italic",
-                            justifyContent: "flex-end",
-                            paddingLeft: "10px",
-                            paddingRight: "10px",
-                        }}
-                    >
+                    <HelperText>
                         {cargo?.id && t(I18.RELATIVE_COORDS)}
-                    </span>
-                </div>
+                    </HelperText>
+                </MapWrap>
                 <Cargoes onRowClick={onRowClick} />
             </Content>
         </div>

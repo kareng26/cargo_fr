@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import { Container, Box, Title, Buttons } from "./components";
+import { Container, Box, Title, Buttons, InfoWrap } from "./components";
 import { Wrapper } from "@/components/wrapper";
 import { FormInputs, FormValues, StepIndex } from "./types.ts";
 import { Steps } from "./const.ts";
@@ -22,6 +22,7 @@ import { Address, FiasLevels } from "@/types.ts";
 import { useCreateCargoMutation } from "@/store/api/cargo.ts";
 import { useCreateDocumentMutation } from "@/store/api";
 import { Loader } from "@/components/loader";
+import { Info } from "@/components/info";
 
 export const Registration: React.FC = () => {
     const [createCargo, { isError: isCargoError, isLoading: isCargoLoading }] =
@@ -113,24 +114,24 @@ export const Registration: React.FC = () => {
     const addressListener = (
         data: Address,
         value: string,
-        field: keyof typeof FormInputs,
+        field: FormInputs,
     ) => {
         if (
             ![FiasLevels.APARTMENT, FiasLevels.HOUSE].includes(data.fias_level)
         ) {
-            setError(FormInputs[field], {
+            setError(field, {
                 message: ValidationErrors.incorrectAddress,
             });
         } else {
             setValue(
-                FormInputs[field],
+                field,
                 JSON.stringify({
                     name: value,
                     latitude: data.geo_lat,
                     longitude: data.geo_lon,
                 }),
             );
-            clearErrors(FormInputs[field]);
+            clearErrors(field);
         }
     };
 
@@ -169,10 +170,13 @@ export const Registration: React.FC = () => {
                         currentStep={currentStep}
                         errors={errors}
                         sendListener={(...rst) =>
-                            addressListener(...rst, "SEND_POINT")
+                            addressListener(...rst, FormInputs.SEND_POINT)
                         }
                         destinationListener={(...rst) =>
-                            addressListener(...rst, "DESTINATION_POINT")
+                            addressListener(
+                                ...rst,
+                                FormInputs.DESTINATION_POINT,
+                            )
                         }
                     />
                     <Buttons>
@@ -201,6 +205,11 @@ export const Registration: React.FC = () => {
                         )}
                     </Buttons>
                 </Box>
+                <InfoWrap>
+                    <Info onClick={() => navigate("/tracking")}>
+                        {t(I18.USER_CARGOES)}
+                    </Info>
+                </InfoWrap>
             </Container>
         </Wrapper>
     );

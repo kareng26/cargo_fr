@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import { TableCell } from "@mui/material";
+import { Colors } from "@/assets/colors";
 
 const Pointer = styled(TableCell).attrs(() => ({
     sx: {
-        color: "#bc942c",
+        color: Colors.RUBAN_A_CHEVEUX,
     },
 }))`
     cursor: pointer;

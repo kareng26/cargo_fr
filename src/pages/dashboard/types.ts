@@ -1,4 +1,5 @@
 import { I18 } from "@/i18n.ts";
+import { Colors } from "@/assets/colors";
 
 enum Statuses {
     "Передано в доставку" = I18.TO_DELIVERY,
@@ -8,10 +9,10 @@ enum Statuses {
 }
 
 enum StatusColores {
-    to_delivery = "#c01a1a",
-    on_way = "#128118",
-    created = "#2385a9",
-    delivered = "#eabc4e",
+    to_delivery = Colors.ROUGE_CARDINAL,
+    on_way = Colors.VERT_GOLF,
+    created = Colors.BLEU_MARMARA,
+    delivered = Colors.RUBAN_A_CHEVEUX,
 }
 
 type OptionArgs = {
