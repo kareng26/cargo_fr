@@ -17,7 +17,7 @@ const Tooltip: React.FC<Props> = ({ cargo }) => {
     const navigate = useNavigate();
 
     return (
-        <Container>
+        <Container onClick={() => navigate(`/cargo/${cargo.id}`)}>
             <Item>
                 <ItemTitle>{t(I18.TOOLTIP_NAME)}</ItemTitle>
                 <ItemText>{cargo?.name}</ItemText>
@@ -32,9 +32,7 @@ const Tooltip: React.FC<Props> = ({ cargo }) => {
                     )}
                 </ItemText>
             </Item>
-            <ItemInfo onClick={() => navigate(`/cargo/${cargo.id}`)}>
-                {t(I18.TOOLTIP_INFO)}
-            </ItemInfo>
+            <ItemInfo>{t(I18.TOOLTIP_INFO)}</ItemInfo>
         </Container>
     );
 };
@@ -56,6 +54,7 @@ const Container = styled.div`
     overflow-y: scroll;
     font-family: sans-serif;
     box-shadow: 0 1px 10px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
 `;
 
 const Item = styled.div`
